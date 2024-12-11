@@ -6,8 +6,7 @@ interne à l'Inist-CNRS.
 1. Introduction
    1. Quoi ?
       1. Javascript / node
-      2. flux
-      3. 
+      2. données structurées / flux
    2. Où ?
       1. lodex (enrichissements, loaders, routines, exporters)
       2. services web TDM
@@ -21,13 +20,16 @@ interne à l'Inist-CNRS.
    2. assign
    3. expand
    4. combine
+   5. dedupe
 3. Instructions d'entrée-sortie
    1. JSON (parse / dump)
-   2. CSV (parse / string)
-   3. URL (connect / stream)
+   2. JSONL (unpack / pack)
+   3. CSV (parse / string)
+   4. URL (connect / stream)
+   5. Exercices: json2jsonl, jsonl2tsv, ...
 4. Usages avancés
    1. plugins (analytics, teeft, istex, conditor, sparql, spawn)
-   2. `.cfg` (ex: loterre-resolvers)
+   2. `.cfg` (delegate ; ex: loterre-resolvers)
    3. loaders
 5. Ressources
    1. playground
