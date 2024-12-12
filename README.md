@@ -15,7 +15,7 @@ interne à l'Inist-CNRS.
       1. shell (`.ini`, `npx`)
       2. javascript
       3. playground
-2. Instructions d'entrée-sortie
+2. [Instructions d'entrée-sortie](basics.md)
    1. JSON (parse / dump)
    2. JSONL (unpack / pack)
    3. CSV (parse / string)

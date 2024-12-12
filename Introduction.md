@@ -3,7 +3,8 @@
 ## Quoi ?
 
 [ezs](https://inist-cnrs.github.io/ezs) est un outil de manipulation de données
-structurées.
+structurées.  
+Il est Open Source et développé par l'Inist-CNRS.  
 
 Il se présente sous la forme d'un [paquet
 Node](https://www.npmjs.com/package/@ezs/core), qui peut s'utiliser comme une
