@@ -95,7 +95,7 @@ plugin = @ezs/basics
 > Au cours de vos interactions avec ezs, vous pouvez rencontrer une
 > sortie ressemblant à:
 >
-> ```txt
+> ```log
 > [object Object]
 > [object Object]
 > ```
@@ -130,7 +130,7 @@ plugin = @ezs/basics
 > ```ini
 > [use]
 > # JSONParse
-> plugin = basics
+> plugin = @ezs/basics
 > 
 > [JSONParse]
 > 
@@ -150,6 +150,47 @@ plugin = @ezs/basics
 > ```
 
 ## JSONL (unpack / pack)
+
+JSONL, pour [JSON Lines](https://jsonlines.org/), est une forme alternative à
+JSON, qui permet d'envoyer des objets un par un, un par ligne, à un script.  
+Cela a plusieurs avantages :
+
+1. on peut utiliser des commandes UNIX comme `wc -l`
+2. il est plus efficace d'analyser un seul objet qu'un objet à l'intérieur d'un
+   autre (gestion de la mémoire facilitée), ce qui est le cas avec les tableaux
+   d'objets qu'on traite souvent.  
+3. c'est le format d'export par défaut de lodex
+
+Les instructions de lecture et d'écriture du JSONL d'ezs font partie de son
+cœur: on n'a donc pas besoin d'utiliser le *plugin* `@ezs/basics` pour s'en
+servir.
+
+> [!TIP]  
+> Pour les anciens qui ont connu DILIB, c'est le même principe: une notice par
+> ligne.  
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJ2YWx1ZVwiOiAxIH1cbnsgXCJ2YWx1ZVwiOiAyIH0iLCJzY3JpcHQiOiJbdW5wYWNrXVxuW3BhY2tdIn0=)
+
+*Entrée*:
+
+```jsonl
+{ "value": 1 }
+{ "value": 2 }
+```
+
+*Script*:
+
+```ini
+[unpack]
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+{"value":1}
+{"value":2}
+```
 
 ## CSV (parse / string)
 
