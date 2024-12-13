@@ -312,7 +312,9 @@ id;value
 > fonction `fix()`, qui assure que l'objet javascript arrive tel quel, exprimé
 > avec une syntaxe JavaScript.  
 > Par défaut, ezs interprète la valeur d'un paramètre comme une chaîne de
-> caractères ou comme un nombre.  
+> caractères, comme un nombre, ou comme un booléen (`true` ou `false`).  
+> Pour plus de détails, voir [la documentation
+> d'ezs](https://inist-cnrs.github.io/ezs/#/coding-ini?id=valeurs-statiques).  
 > Donc, au lieu d'avoir une tabulation comme séparateur, on aurait les deux
 > caractères `\t`, ce qui ne correspond à aucun format classique.  
 
@@ -320,8 +322,11 @@ id;value
 > Nous ne pouvons pas prendre le temps d'explorer l'utilisation de fonctions
 > dans les valeurs des paramètres des instructions ezs.  
 > C'est pourtant là que réside une grande partie de la puissance d'ezs.  
-> Pour plus d'information, voir [Lodex : curation des données avec
-> Lodash](https://360.articulate.com/review/content/8a03727a-da2c-4eed-a5f1-0f8e85cf7440/review).
+> Pour plus d'information, voir le parcours complémentaire [Lodex : curation des
+> données avec
+> Lodash](https://360.articulate.com/review/content/8a03727a-da2c-4eed-a5f1-0f8e85cf7440/review)
+> et [la documentation
+> d'ezs](https://inist-cnrs.github.io/ezs/#/coding-ini?id=valeurs-dynamiques).  
 
 [Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6IntcImlkXCI6XCIxXCIsXCJ2YWx1ZVwiOlwidW5lXCJ9XG57XCJpZFwiOlwiMlwiLFwidmFsdWVcIjpcImRldXhcIn1cbiIsInNjcmlwdCI6Ilt1c2VdXG4jIENTVlN0cmluZ1xucGx1Z2luID0gYmFzaWNzXG5cblt1bnBhY2tdXG5cbltDU1ZTdHJpbmddXG5zZXBhcmF0b3IgPSBmaXgoXCJcXHRcIikifQ==)
 
@@ -354,5 +359,65 @@ id	value
 ```
 
 ## URL (connect / stream)
+
+Les enrichissements de Lodex font appel à web service de TDM, en utilisant
+l'instruction
+[`URLConnect`](https://inist-cnrs.github.io/ezs/#/plugin-basics?id=urlconnect).
+
+Elle permet typiquement d'interroger une API. Pour les connaisseurs: la méthode
+HTTP employée est `POST`, et la charge (*payload*) de la requête est la
+conversion de l'objet en entrée en chaîne de caractères (transformée par
+`dump`).  
+
+> [!CAUTION]  
+> Comme `URLConnect` lance une requête *par objet du flux*, si vous avez
+> beaucoup d'objets (de lignes, dans un `.tsv` ou dans `.jsonl`), c'est autant
+> de requêtes, sur le même serveur, qui seront lancées quasi-instantanément (en
+> tout cas de manière très rapprochée).  
+> Il existe plusieurs solutions pour modérer cette *attaque violente* d'un
+> serveur, pour éviter de s'en faire exclure.  Voir
+> [expand](https://inist-cnrs.github.io/ezs/#/plugin-core?id=expand) (pour
+> envoyer plusieurs lignes d'un coup, si le serveur le permet) et
+> [throttle](https://inist-cnrs.github.io/ezs/#/plugin-core?id=throttle) (pour
+> freiner le rythme d'envoi des requêtes).
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJpZFwiOiAxLCBcInZhbHVlXCI6IFwiTm9ybWFsZW1lbnQsIFRlZWZ0IGV4dHJhaXQgcGFybWkgbGVzIG1vdHMgZCd1biB0ZXh0ZSBjZXV4IHF1aSBzb250IGxlcyBwbHVzIHNw6WNpZmlxdWVzIOAgY2UgdGV4dGUuIFBvdXIgY2VsYSwgaWwgdXRpbGlzZSBkZXMgc3RhdGlzdGlxdWVzIGQndXRpbGlzYXRpb24gZGVzIG1vdHMgbGVzIHBsdXMgY291cmFudHMgZGUgbGEgbGFuZ3VlLlwifSIsInNjcmlwdCI6Ilt1c2VdXG4jIFVSTENvbm5lY3RcbnBsdWdpbiA9IGJhc2ljc1xuXG5bdW5wYWNrXVxuXG5bVVJMQ29ubmVjdF1cbnVybCA9IGh0dHBzOi8vdGVybXMtZXh0cmFjdGlvbi5zZXJ2aWNlcy5pc3RleC5mci92MS90ZWVmdC9mclxuXG5bcGFja10ifQ==)
+
+*Entrée*:
+
+```jsonl
+{ "id": 1, "value": "Normalement, Teeft extrait parmi les mots d'un texte ceux qui sont les plus spécifiques à ce texte. Pour cela, il utilise des statistiques d'utilisation des mots les plus courants de la langue."}
+```
+
+*Script*:
+
+```ini
+[use]
+# URLConnect
+plugin = basics
+
+[unpack]
+
+[URLConnect]
+url = https://terms-extraction.services.istex.fr/v1/teeft/fr
+
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+{"id":1,"value":["teeft"]}
+```
+
+> [!NOTE]  
+> Tous les web services TDM (voir la [documentation
+> technique](https://openapi.services.istex.fr/?urls.primaryName=terms-extraction%20-%20Extraction%20de%20termes#/terms-extraction/post-v1-teeft-fr))
+> fonctionnent de la même manière: lots d'objets avec au moins un champ `value`
+> contenant l'objet du traitement, envoyé avec la méthode `POST`.  
+> C'est pourquoi la donnée envoyée était sous forme d'un objet contenant un champ `value`.  
+> Mais cela n'empêche pas d'interroger d'autres types d'API, à condition que la
+> route utilisée fonctionne avec la [méthode HTTP
+> `POST`](https://developer.mozilla.org/fr/docs/Web/HTTP/Methods/POST).
 
 ## Exercices: json2jsonl, jsonl2tsv, et caetera

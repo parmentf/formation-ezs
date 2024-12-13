@@ -26,12 +26,14 @@ interne à l'Inist-CNRS.
    2. assign
    3. expand
    4. combine
-   5. dedupe
-   6. env
+   5. throttle
+   6. dedupe
+   7. env
 4. Usages avancés
    1. plugins (analytics, teeft, istex, conditor, sparql, spawn)
    2. `.cfg` (delegate ; ex: loterre-resolvers)
    3. loaders
+   4. le cas Lodash
 5. Ressources
    1. playground
    2. npm
