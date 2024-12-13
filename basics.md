@@ -194,6 +194,165 @@ servir.
 
 ## CSV (parse / string)
 
+[CSV](https://fr.wikipedia.org/wiki/Comma-separated_values) est un format
+répandu.  
+ezs a donc des instructions pour lire et écrire ce format: `CSVParse` et
+`CSVString`, du *plugin* `@ezs/basics`.  
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6ImlkLHZhbHVlXG4xLHVuZVxuMixkZXV4Iiwic2NyaXB0IjoiW3VzZV1cbiMgQ1NWUGFyc2VcbnBsdWdpbiA9IGJhc2ljc1xuXG5bQ1NWUGFyc2VdXG5cbltwYWNrXSJ9)
+
+*Entrée*:
+
+```csv
+id,value
+1,une
+2,deux
+```
+
+*Script*:
+
+```ini
+[use]
+# CSVParse
+plugin = basics
+
+[CSVParse]
+
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+["id","value"]
+["1","une"]
+["2","deux"]
+```
+
+> [!NOTE]  
+> L'interprétation du CSV par `CSVParse` est stricte, c'est-à-dire que
+> l'instruction ne suppose pas de structure particulière (la ligne d'entête
+> n'est pas considérée comme telle).  
+> On retrouve donc une série de tableaux de valeurs, dont le premier n'a aucune
+> signification particulière.  
+
+> [!IMPORTANT]  
+> Pour retrouver la structure fournie par un CSV avec une ligne d'entête
+> contenant les noms des champs, il faut utiliser `CSVObject`.
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6ImlkLHZhbHVlXG4xLHVuZVxuMixkZXV4Iiwic2NyaXB0IjoiW3VzZV1cbiMgQ1NWUGFyc2VcbnBsdWdpbiA9IGJhc2ljc1xuXG5bQ1NWUGFyc2VdXG5bQ1NWT2JqZWN0XVxuW3BhY2tdIn0=)
+
+*Entrée*:
+
+```csv
+id,value
+1,une
+2,deux
+```
+
+*Script*:
+
+```ini
+[use]
+# CSVParse
+plugin = basics
+
+[CSVParse]
+[CSVObject]
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+{"id":"1","value":"une"}
+{"id":"2","value":"deux"}
+```
+
+Par défaut, `CSVString` transforme les objets en entrée en chaîne de caractères
+au format CSV, avec une ligne d'entête contenant les noms des champs, et le
+point-virgule comme séparateur (le séparateur d'Excel français).
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6IntcImlkXCI6XCIxXCIsXCJ2YWx1ZVwiOlwidW5lXCJ9XG57XCJpZFwiOlwiMlwiLFwidmFsdWVcIjpcImRldXhcIn1cbiIsInNjcmlwdCI6Ilt1c2VdXG4jIENTVlN0cmluZ1xucGx1Z2luID0gYmFzaWNzXG5cblt1bnBhY2tdXG5cbltDU1ZTdHJpbmddXG4ifQ==)
+
+*Entrée*:
+
+```jsonl
+{"id":"1","value":"une"}
+{"id":"2","value":"deux"}
+```
+
+*Script*:
+
+```ini
+[use]
+# CSVString
+plugin = basics
+
+[unpack]
+
+[CSVString]
+```
+
+*Sortie*:
+
+```csv
+id;value
+1;une
+2;deux
+```
+
+> [!NOTE]  
+> `CSVString` a des options importantes.  
+> `separator` donne le séparateur à utiliser.  Pour produire du TSV, le plus
+> simple est d'utiliser `separator = fix("\t")`
+
+> [!WARNING]  
+> Pour exprimer des caractères spéciaux (comme `\t`), il faut utiliser la
+> fonction `fix()`, qui assure que l'objet javascript arrive tel quel, exprimé
+> avec une syntaxe JavaScript.  
+> Par défaut, ezs interprète la valeur d'un paramètre comme une chaîne de
+> caractères ou comme un nombre.  
+> Donc, au lieu d'avoir une tabulation comme séparateur, on aurait les deux
+> caractères `\t`, ce qui ne correspond à aucun format classique.  
+
+> [!NOTE]  
+> Nous ne pouvons pas prendre le temps d'explorer l'utilisation de fonctions
+> dans les valeurs des paramètres des instructions ezs.  
+> C'est pourtant là que réside une grande partie de la puissance d'ezs.  
+> Pour plus d'information, voir [Lodex : curation des données avec
+> Lodash](https://360.articulate.com/review/content/8a03727a-da2c-4eed-a5f1-0f8e85cf7440/review).
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6IntcImlkXCI6XCIxXCIsXCJ2YWx1ZVwiOlwidW5lXCJ9XG57XCJpZFwiOlwiMlwiLFwidmFsdWVcIjpcImRldXhcIn1cbiIsInNjcmlwdCI6Ilt1c2VdXG4jIENTVlN0cmluZ1xucGx1Z2luID0gYmFzaWNzXG5cblt1bnBhY2tdXG5cbltDU1ZTdHJpbmddXG5zZXBhcmF0b3IgPSBmaXgoXCJcXHRcIikifQ==)
+
+*Entrée*:
+
+```jsonl
+{"id":"1","value":"une"}
+{"id":"2","value":"deux"}
+```
+
+*Script*:
+
+```ini
+[use]
+# CSVString
+plugin = basics
+
+[unpack]
+
+[CSVString]
+separator = fix("\t")
+```
+
+*Sortie*:
+
+```tsv
+id	value
+1	une
+2	deux
+```
+
 ## URL (connect / stream)
 
 ## Exercices: json2jsonl, jsonl2tsv, et caetera
