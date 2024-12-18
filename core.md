@@ -158,3 +158,42 @@ indent = true
 ## throttle
 
 ## dedupe
+
+## Exercices
+
+### Quadruple
+
+Reprenez l'exemple de [`assign`](#assign) avec le champ `double` et ajoutez un
+champ `quadruple` dont la valeur sera le double de celle du champ `double` créé
+juste avant.  
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+[Script](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJpZFwiOiAxIH1cbnsgXCJpZFwiOiAyIH0iLCJzY3JpcHQiOiJbdW5wYWNrXVxuXG5bYXNzaWduXVxucGF0aCA9IGRvdWJsZVxudmFsdWUgPSBnZXQoXCJpZFwiKS5tdWx0aXBseSgyKVxuXG5bYXNzaWduXVxucGF0aCA9IHF1YWRydXBsZVxudmFsdWUgPSBnZXQoXCJkb3VibGVcIikubXVsdGlwbHkoMilcblxuW2R1bXBdXG5pbmRlbnQgPSB0cnVlIn0=):
+
+```ini
+[unpack]
+
+[assign]
+path = double
+value = get("id").multiply(2)
+
+[assign]
+path = quadruple
+value = get("double").multiply(2)
+
+[dump]
+indent = true
+```
+
+> [!WARNING]  
+> Si vous avez rassemblé les deux `assign`s en un, le résultat obtenu est faux
+> (le champ `quadruple` contient la même valeur que le champ `double`).  
+> D'une manière générale, quand vous calculez la valeur d'un champ à partir de
+> celle d'un autre (surtout quand vous venez de le créer), ne le faites pas en
+> une étape (ici, dans le même `assign`) car le résultat ne sera pas garanti.  
+
+</details>
