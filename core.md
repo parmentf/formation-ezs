@@ -167,6 +167,13 @@ Reprenez l'exemple de [`assign`](#assign) avec le champ `double` et ajoutez un
 champ `quadruple` dont la valeur sera le double de celle du champ `double` créé
 juste avant.  
 
+> [!WARNING]  
+> Si vous rassemblez les deux `assign`s en un, le résultat obtenu est faux (le
+> champ `quadruple` contient la même valeur que le champ `double`).  
+> D'une manière générale, quand vous calculez la valeur d'un champ à partir de
+> celle d'un autre (surtout quand vous venez de le créer), ne le faites pas en
+> une étape (ici, dans le même `assign`) car le résultat ne sera pas garanti.  
+
 <details>
 <summary>
 Voir la solution
@@ -188,12 +195,5 @@ value = get("double").multiply(2)
 [dump]
 indent = true
 ```
-
-> [!WARNING]  
-> Si vous avez rassemblé les deux `assign`s en un, le résultat obtenu est faux
-> (le champ `quadruple` contient la même valeur que le champ `double`).  
-> D'une manière générale, quand vous calculez la valeur d'un champ à partir de
-> celle d'un autre (surtout quand vous venez de le créer), ne le faites pas en
-> une étape (ici, dans le même `assign`) car le résultat ne sera pas garanti.  
 
 </details>
