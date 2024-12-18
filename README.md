@@ -21,8 +21,8 @@ interne à l'Inist-CNRS.
    3. [CSV (parse / string)](basics.md#csv-parse--string)
    4. [URL (connect)](basics.md#url-connect)
    5. [Exercices: json2jsonl, jsonl2tsv, ...](basics.md#exercices-json2jsonl-jsonl2tsv-et-caetera)
-3. Instructions essentielles
-   1. assign
+3. [Instructions essentielles](core.md)
+   1. [assign](core.md#assign)
    2. expand
    3. combine
    4. singleton
