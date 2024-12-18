@@ -358,7 +358,7 @@ id	value
 2	deux
 ```
 
-## URL (connect / stream)
+## URL (connect)
 
 Les enrichissements de Lodex font appel à web service de TDM, en utilisant
 l'instruction
@@ -421,3 +421,91 @@ url = https://terms-extraction.services.istex.fr/v1/teeft/fr
 > `POST`](https://developer.mozilla.org/fr/docs/Web/HTTP/Methods/POST).
 
 ## Exercices: json2jsonl, jsonl2tsv, et caetera
+
+### json2jsonl
+
+Avec les instructions `JSONParse` et `pack`, nous sommes outillés pour créer un
+script qui convertit du JSON en JSONL.  
+
+À vous de jouer.  
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+[Script](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6Ilt7IFwidmFsdWVcIjogMSB9LCB7XCJ2YWx1ZVwiOjJ9XSIsInNjcmlwdCI6Ilt1c2VdXG4jIEpTT05QYXJzZVxucGx1Z2luID0gYmFzaWNzXG5cbltKU09OUGFyc2VdXG5bcGFja10ifQ==):
+
+```ini
+[use]
+# JSONParse
+plugin = basics
+
+[JSONParse]
+[pack]
+```
+
+</details>
+
+### jsonl2tsv
+
+Pour convertir du JSONL en TSV, tout ce qu'il nous faut, ce sont les
+instructions `unpack` et `CSVString` (mais cette fois il faudra utiliser
+quelques paramètres).
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+[Script](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6IntcImlkXCI6XCJpdW5cIixcInZhbHVlXCI6MX1cbntcImlkXCI6XCJkZXV4XCIsXCJ2YWx1ZVwiOjJ9XG4iLCJzY3JpcHQiOiJbdXNlXVxuIyBDU1ZTdHJpbmdcbnBsdWdpbiA9IGJhc2ljc1xuXG5bdW5wYWNrXVxuW0NTVlN0cmluZ11cbnNlcGFyYXRvciA9IGZpeChcIlxcdFwiKSJ9):
+
+```ini
+[use]
+# CSVString
+plugin = basics
+
+[unpack]
+[CSVString]
+separator = fix("\t")
+```
+
+</details>
+
+### csv2tsv
+
+La conversion d'un CSV français (dont le séparateur est un point-virgule) et
+dont certains champs contiennent des double-quotes en TSV vous posera-t-elle des
+problèmes ?
+
+Pour tester, utilisez ce CSV français:
+
+```csv
+id;value
+"1";"""citation"""
+"2";"normal"
+```
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+[Script](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6ImlkO3ZhbHVlXG5cIjFcIjtcIlwiXCJjaXRhdGlvblwiXCJcIlxuXCIyXCI7XCJub3JtYWxcIiIsInNjcmlwdCI6Ilt1c2VdXG4jIENTVlBhcnNlIENTVk9iamVjdCBDU1ZTdHJpbmdcbnBsdWdpbiA9IGJhc2ljc1xuXG5bQ1NWUGFyc2VdXG5zZXBhcmF0b3IgPSA7XG5xdW90ZSA9IGZpeCgnXCInKVxuXG5bQ1NWT2JqZWN0XVxuXG5bQ1NWU3RyaW5nXVxuc2VwYXJhdG9yID0gZml4KFwiXFx0XCIpXG4ifQ==):
+
+```ini
+[use]
+# CSVParse CSVObject CSVString
+plugin = basics
+
+[CSVParse]
+separator = ;
+quote = fix('"')
+
+[CSVObject]
+
+[CSVString]
+separator = fix("\t")
+```
+
+</details>
