@@ -43,6 +43,17 @@ retransformer ces objets en chaînes de caractères formatées.
 > La documentation d'ezs fournit la description des instructions de
 > `@ezs/basics`: <https://inist-cnrs.github.io/ezs/#/plugin-basics>
 
+> [!IMPORTANT]  
+> Comme tout plugin ezs, pour qu'un script ezs l'utilisant puisse fonctionner,
+> il doit être installé au préalable:  
+>
+> ```bash
+> npm install @ezs/basics
+> ```
+>
+> Dans le contexte de lodex ou d'ezs-playground, cette installation est déjà
+> effectuée, il n'y a pas à s'en préoccuper.  
+
 ## JSON (parse / dump)
 
 Pour analyser (*parse* en anglais) une chaîne de caractères représentant un
@@ -80,7 +91,7 @@ plugin = @ezs/basics
 > @ezs/basics` pour signaler quelles instructions nécessitent l'utilisation du
 > *plugin*.  
 > Cela permet, au cours de la vie de scripts plus longs, de s'assurer que cette
-> déclaration est toujours nécessaire.  
+> déclaration est encore nécessaire.  
 
 > [!IMPORTANT]  
 > Quand un *plugin* est déclaré, il doit impérativement être installé, sous
@@ -107,8 +118,8 @@ plugin = @ezs/basics
 > [!NOTE]  
 > Il est conseillé de remplacer `JSONString` par `dump`, qui est inclus dans ezs
 > par défaut.  
-> Par ailleurs, il est plus efficace que `JSONString`, il n'y a donc aucune
-> raison de se priver de cette possibilité de ne pas inclure `@ezs/basics`.  
+> Par ailleurs, il est plus efficace que `JSONString`, il est donc préférable
+> d'utiliser cette possibilité de ne pas inclure `@ezs/basics`.  
 >
 > Le script devient alors:
 >
@@ -195,7 +206,7 @@ servir.
 ## CSV (parse / string)
 
 [CSV](https://fr.wikipedia.org/wiki/Comma-separated_values) est un format
-répandu.  
+structuré (tabulaire) répandu.  
 ezs a donc des instructions pour lire et écrire ce format: `CSVParse` et
 `CSVString`, du *plugin* `@ezs/basics`.  
 
@@ -269,9 +280,10 @@ plugin = basics
 {"id":"2","value":"deux"}
 ```
 
-Par défaut, `CSVString` transforme les objets en entrée en chaîne de caractères
-au format CSV, avec une ligne d'entête contenant les noms des champs, et le
-point-virgule comme séparateur (le séparateur d'Excel français).
+L'instruction inverse (de sérialisation) est `CSVString`, qui transforme par
+défaut les objets javascript (en entrée) en chaîne de caractères au format CSV,
+avec une ligne d'entête contenant les noms des champs, et le point-virgule comme
+séparateur (le séparateur d'Excel français).
 
 [Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6IntcImlkXCI6XCIxXCIsXCJ2YWx1ZVwiOlwidW5lXCJ9XG57XCJpZFwiOlwiMlwiLFwidmFsdWVcIjpcImRldXhcIn1cbiIsInNjcmlwdCI6Ilt1c2VdXG4jIENTVlN0cmluZ1xucGx1Z2luID0gYmFzaWNzXG5cblt1bnBhY2tdXG5cbltDU1ZTdHJpbmddXG4ifQ==)
 
@@ -315,8 +327,9 @@ id;value
 > caractères, comme un nombre, ou comme un booléen (`true` ou `false`).  
 > Pour plus de détails, voir [la documentation
 > d'ezs](https://inist-cnrs.github.io/ezs/#/coding-ini?id=valeurs-statiques).  
-> Donc, au lieu d'avoir une tabulation comme séparateur, on aurait les deux
-> caractères `\t`, ce qui ne correspond à aucun format classique.  
+> Donc, sans utiliser `fix()`, au lieu d'avoir une tabulation comme séparateur,
+> on aurait les deux caractères `\t`, ce qui ne correspond à aucun format
+> classique.  
 
 > [!NOTE]  
 > Nous ne pouvons pas prendre le temps d'explorer l'utilisation de fonctions
@@ -360,7 +373,7 @@ id	value
 
 ## URL (connect)
 
-Les enrichissements de Lodex font appel à web service de TDM, en utilisant
+Les enrichissements de Lodex font appel à un web service de TDM, en utilisant
 l'instruction
 [`URLConnect`](https://inist-cnrs.github.io/ezs/#/plugin-basics?id=urlconnect).
 
@@ -415,7 +428,8 @@ url = https://terms-extraction.services.istex.fr/v1/teeft/fr
 > technique](https://openapi.services.istex.fr/?urls.primaryName=terms-extraction%20-%20Extraction%20de%20termes#/terms-extraction/post-v1-teeft-fr))
 > fonctionnent de la même manière: lots d'objets avec au moins un champ `value`
 > contenant l'objet du traitement, envoyé avec la méthode `POST`.  
-> C'est pourquoi la donnée envoyée était sous forme d'un objet contenant un champ `value`.  
+> C'est pourquoi la donnée envoyée était sous forme d'un objet contenant un
+> champ `value`.  
 > Mais cela n'empêche pas d'interroger d'autres types d'API, à condition que la
 > route utilisée fonctionne avec la [méthode HTTP
 > `POST`](https://developer.mozilla.org/fr/docs/Web/HTTP/Methods/POST).
@@ -476,7 +490,9 @@ separator = fix("\t")
 
 La conversion d'un CSV français (dont le séparateur est un point-virgule) et
 dont certains champs contiennent des double-quotes en TSV vous posera-t-elle des
-problèmes ?
+problèmes ?  
+Si c'est le cas, n'oubliez pas de consulter la [documentation
+d'ezs](https://inist-cnrs.github.io/ezs/#/plugin-basics?id=csvparse).  
 
 Pour tester, utilisez ce CSV français:
 

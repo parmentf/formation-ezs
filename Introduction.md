@@ -22,8 +22,9 @@ de l'ordinateur qui l'exécute.
 - [loaders](https://github.com/Inist-CNRS/lodex/tree/master/workers/loaders)
 - [exporters](https://github.com/Inist-CNRS/lodex/tree/master/workers/exporters)
 - [routines](https://github.com/Inist-CNRS/lodex/tree/master/workers/routines)
-- enrichissements (via les web services)
-- pré-calculs
+- [enrichissements](https://www.lodex.fr/docs/documentation/principales-fonctionnalites-disponibles/la-creation-dun-modele/enrichissements-avec-les-web-services/#dans-lodex)
+  (via les web services)
+- [pré-calculs](https://www.lodex.fr/docs/documentation/pour-aller-plus-loin-2/les-pre-calculs/)
 
 ### web services TDM
 
@@ -56,6 +57,7 @@ Pour lancer un script ezs, il faut:
 - installer [node.js](https://nodejs.org/fr) (utilisation de
   [nvm](https://github.com/nvm-sh/nvm?tab=readme-ov-file#intro) recommandée)
 - installer le cœur d'ezs: `npm install @ezs/core`
+- installer d'éventuels compléments (voir la section suivante)
 - lancer le script `script.ini`: `npx ezs script.ini < input.json`
 
 ezs étant aussi une bibliothèque JavaScript, on peut aussi l'utiliser dans un
