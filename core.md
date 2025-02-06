@@ -352,7 +352,7 @@ On peut utiliser `env` pour stocker d'abord un objet faisant correspondre un
 numéro de département et son nom:
 
 ```json
-{ 54: "Meurthe-et-Moselle", 55: "Meuse", 57: "Moselle", 88: "Vosges" }
+{ "54": "Meurthe-et-Moselle", "55": "Meuse", "57": "Moselle", "88": "Vosges" }
 ```
 
 `expand` est l'instruction idéale pour *étendre* le numéro de département à son
@@ -366,7 +366,7 @@ Voir la solution
 ```ini
 [env]
 path = noms
-value = fix({ 54: "Meurthe-et-Moselle", 55: "Meuse", 57: "Moselle", 88: "Vosges" })
+value = fix({ "54": "Meurthe-et-Moselle", "55": "Meuse", "57": "Moselle", "88": "Vosges" })
 
 [unpack]
 
