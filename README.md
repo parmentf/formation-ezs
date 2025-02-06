@@ -4,14 +4,14 @@ Cette formation de 2 demi-journées de 3 heures est prévue pour être donnée e
 interne à l'Inist-CNRS.
 
 1. [Introduction](Introduction.md)
-   1. Quoi ?
+   1. [Quoi ?](Introduction.md#quoi-)
       1. Javascript / node
       2. données structurées / flux
-   2. Où ?
+   2. [Où ?](Introduction.md#o%C3%B9-)
       1. lodex (enrichissements, loaders, routines, exporters)
       2. services web TDM
       3. web dumps
-   3. Comment ?
+   3. [Comment ?](Introduction.md#comment-)
       1. shell (`.ini`, `npx`)
       2. javascript
       3. playground
@@ -23,7 +23,7 @@ interne à l'Inist-CNRS.
    5. [Exercices: json2jsonl, jsonl2tsv, ...](basics.md#exercices-json2jsonl-jsonl2tsv-et-caetera)
 3. [Instructions essentielles](core.md)
    1. [assign](core.md#assign)
-   2. expand
+   2. [expand](core.md#expand)
    3. combine
    4. singleton
    5. env
