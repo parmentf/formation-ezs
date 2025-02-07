@@ -147,100 +147,6 @@ indent = true
 > }]
 > ```
 
-## env
-
-Quand on a besoin d'une valeur pour toute la durée du traitement, on peut la
-mettre dans une variable d'*environnement*, en utilisant la commande
-[`env`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=env).  
-
-On l'utilise généralement au début du script, quand elle ne dépend alors pas des
-éléments du flux.  
-On la place alors juste après l'instruction `[use]` et ses paramètres.  
-
-[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJpZFwiOiAxLCBcImTpcGFydGVtZW50XCI6IDU0IH1cbnsgXCJpZFwiOiAyLCBcImTpcGFydGVtZW50XCI6IDg4IH1cbnsgXCJpZFwiOiAzLCBcImTpcGFydGVtZW50XCI6IDU1IH1cbnsgXCJpZFwiOiA0LCBcImTpcGFydGVtZW50XCI6IDU3IH0iLCJzY3JpcHQiOiJbZW52XVxucGF0aCA9IGNvbnN0YW50ZVxudmFsdWUgPSBQYXJ0b3V0IGxlIG3qbWVcblxuXG5bdW5wYWNrXVxuXG5bYXNzaWduXVxucGF0aCA9IG5vbVxudmFsdWUgPSBlbnYoXCJjb25zdGFudGVcIilcblxuW3BhY2tdIn0=):
-
-*Entrée*:
-
-```jsonl
-{ "id": 1, "département": 54 }
-{ "id": 2, "département": 88 }
-{ "id": 3, "département": 55 }
-{ "id": 4, "département": 57 }
-```
-
-*Script*:
-
-```ini
-[env]
-path = constante
-value = Partout le même
-
-
-[unpack]
-
-[assign]
-path = nom
-value = env("constante")
-
-[pack]
-```
-
-*Sortie*:
-
-```jsonl
-{"id":1,"département":54,"nom":"Partout le même"}
-{"id":2,"département":88,"nom":"Partout le même"}
-{"id":3,"département":55,"nom":"Partout le même"}
-{"id":4,"département":57,"nom":"Partout le même"}
-```
-
-Ici, on a utilisé cette variable pour ajouter une information (la même) dans
-chaque élément du flux.  
-
-> [!NOTE]  
-> L'instruction `[env]` serait complètement inutile sans son pendant
-> [`env()`](https://inist-cnrs.github.io/ezs/#/coding-ini?id=%c3%80-partir-d39une-variable-d39environnement),
-> la fonction qu'on peut utiliser dans un paramètre `value`, comme une fonction
-> Lodash.  
-> Ce n'est cependant pas une fonction Lodash, elle est propre à ezs.  
-
-> [!NOTE]  
-> On peut avoir l'impression, en lisant certains scripts, que `[env]` est
-> utilisée ailleurs qu'en début de script, mais c'est souvent parce qu'on est
-> dans un sous-flux, comme nous allons en voir des exemples pour les
-> instructions [expand](#expand) et [singleton](#singleton).  
-
-> [!TIP]  
-> Même si les valeurs attribuées aux variables d'environnement sont fixes pour
-> toute la durée du flux, on peut utiliser des fonctions pour calculer ces
-> valeurs.  
-> Par
-> [exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJpZFwiOiAxLCBcImTpcGFydGVtZW50XCI6IDU0IH1cbnsgXCJpZFwiOiAyLCBcImTpcGFydGVtZW50XCI6IDg4IH1cbnsgXCJpZFwiOiAzLCBcImTpcGFydGVtZW50XCI6IDU1IH1cbnsgXCJpZFwiOiA0LCBcImTpcGFydGVtZW50XCI6IDU3IH0iLCJzY3JpcHQiOiJbZW52XVxucGF0aCA9IGpvdXJcbnZhbHVlID0gZml4KEludGwuRGF0ZVRpbWVGb3JtYXQoXCJmci1GUlwiKS5mb3JtYXQobmV3IERhdGUoKSkpXG5cblt1bnBhY2tdXG5cblthc3NpZ25dXG5wYXRoID0gam91clxudmFsdWUgPSBlbnYoXCJqb3VyXCIpXG5cbltwYWNrXSJ9)
-> en utilisant la date courante&nbsp;:  
->
-> ```ini
-> [env]
-> path = jour
-> value = fix(Intl.DateTimeFormat("fr-FR").format(new Date()))
-> 
-> [unpack]
-> 
-> [assign]
-> path = jour
-> value = env("jour")
-> 
-> [pack]
-> ```
->
-> qui, avec la même entrée, fournit la sortie suivante&nbsp;:
->
-> ```jsonl
-> {"id":1,"département":54,"jour":"07/02/2025"}
-> {"id":2,"département":88,"jour":"07/02/2025"}
-> {"id":3,"département":55,"jour":"07/02/2025"}
-> {"id":4,"département":57,"jour":"07/02/2025"}
-> ```
-
 ## expand
 
 Il peut arriver qu'on ait besoin de rassembler des objets par lots, afin
@@ -551,10 +457,41 @@ numéro de département et son nom:
 `expand` est l'instruction idéale pour *étendre* le numéro de département à son
 nom.
 
+> [!TIP]  
+> Pour mettre à jour la valeur d'un champ `value`, on peut utiliser la fonction
+> Lodash `update("value", fn).get("value)`.  
+> Ici, `fn` est la définition d'une fonction ayant pour paramètre la valeur du
+> champ `value`.  
+>
+> Une alternative serait `get("value").thru(fn)`, qui a l'avantage d'être plus
+> courte, mais moins parlante (`thru` applique `fn` au résultat de la fonction
+> précédente, c'est le couteau suisse de Lodash).  
+
 <details>
 <summary>
 Voir la solution
 </summary>
+Avec `update`&nbsp;:
+
+```ini
+[env]
+path = noms
+value = fix({ "54": "Meurthe-et-Moselle", "55": "Meuse", "57": "Moselle", "88": "Vosges" })
+
+[unpack]
+
+[expand]
+size = 2
+path = département
+
+[expand/assign]
+path = value
+value = update("value", dept => env("noms")[dept]).get("value")
+
+[pack]
+```
+
+Avec `thru`&nbsp;:
 
 ```ini
 [env]
