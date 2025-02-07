@@ -286,8 +286,6 @@ ezs:info <<<#2 -> {"id":"00000000000000000004","value":4} +0ms
 > En dehors de ezs-playground, il est possible de mettre les opérations du
 > sous-flux en cache (paramètre `cacheName` de `expand`).
 
-## combine
-
 ## singleton
 
 ## env

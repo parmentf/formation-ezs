@@ -24,11 +24,10 @@ interne à l'Inist-CNRS.
 3. [Instructions essentielles](core.md)
    1. [assign](core.md#assign)
    2. [expand](core.md#expand)
-   3. combine
-   4. singleton
-   5. env
-   6. throttle
-   7. dedupe
+   3. singleton
+   4. env
+   5. throttle
+   6. dedupe
 4. Usages avancés
    1. plugins (analytics, teeft, istex, conditor, sparql, spawn)
    2. `.cfg` (delegate ; ex: loterre-resolvers)
