@@ -467,11 +467,26 @@ nom.
 > courte, mais moins parlante (`thru` applique `fn` au résultat de la fonction
 > précédente, c'est le couteau suisse de Lodash).  
 
+> [!TIP]  
+> En JavaScript, on a deux syntaxes pour définir une fonction anonyme&nbsp;:
+>
+> 1. `function (paramètre) { return résultat; }`
+> 2. `paramètre => résultat`
+
+> [!TIP]  
+> Pour ceux qui ne s'en rappelleraient pas (ou ne l'auraient jamais su), en
+> JavaScript, on peut récupérer la valeur d'un champ d'un objet (comme celui qui
+> contient les noms des départements) en utilisant la syntaxe
+> `nomObjet["nomDuChamp"]` (même si on peut aussi utiliser
+> `nomObjet.nomDuChamp`, mais celle-ci n'est pas adaptée à notre cas, car
+> `nomDuChamp` sera une variable).
+
 <details>
 <summary>
 Voir la solution
 </summary>
-Avec `update`&nbsp;:
+
+Avec `update` :
 
 ```ini
 [env]
@@ -491,7 +506,7 @@ value = update("value", dept => env("noms")[dept]).get("value")
 [pack]
 ```
 
-Avec `thru`&nbsp;:
+Avec `thru` :
 
 ```ini
 [env]
