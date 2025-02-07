@@ -24,8 +24,8 @@ interne à l'Inist-CNRS.
 3. [Instructions essentielles](core.md)
    1. [assign](core.md#assign)
    2. [expand](core.md#expand)
-   3. singleton
-   4. env
+   3. env
+   4. singleton
    5. throttle
    6. dedupe
 4. Usages avancés
