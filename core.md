@@ -487,6 +487,97 @@ grand chose, il est donc extrêmement rapide).
 
 ## dedupe
 
+On a fréquemment besoin de dédoublonner des éléments dans un flux (par exemple
+des notices, en se basant sur un DOI).  
+[`dedupe`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=dedupe) est là pour
+ça.  
+
+*Entrée*:
+
+```jsonl
+{ "id": 1, "département": 54 }
+{ "id": 2, "département": 88 }
+{ "id": 3, "département": 55 }
+{ "id": 4, "département": 57 }
+{ "id": 5, "département": 54 }
+{ "id": 6, "département": 88 }
+{ "id": 7, "département": 55 }
+{ "id": 8, "département": 57 }
+{ "id": 9, "département": 90 }
+```
+
+*Script*:
+
+```ini
+[unpack]
+
+[dedupe]
+path = département
+
+[pack]
+```
+
+*Sortie*:
+
+```log
+⚠️ ERROR 👇
+
+item #5 [dedupe] <Error: Duplicate identifier: 54 already exists>
+```
+
+> [!CAUTION]  
+> Par défaut, `[dedupe]` produit une erreur, qui casse le flux, dès qu'un
+> doublon est repéré.  
+> C'est utile quand on veut simplement valider un corpus.  
+> Par contre, pour ne garder que le premier des doublons, on peut utiliser le
+> paramètre `ignore` en le mettant à `true`.  
+
+Avec le script suivant:
+
+```ini
+[unpack]
+
+[dedupe]
+path = département
+ignore = true
+
+[pack]
+```
+
+Le résultat sera:
+
+```jsonl
+{"id":1,"département":54}
+{"id":2,"département":88}
+{"id":3,"département":55}
+{"id":4,"département":57}
+{"id":9,"département":90}
+```
+
+> [!TIP]  
+> Si vous préférez garder le doublon le plus récent, tournez-vous vers
+> `@ezs/analytics` et son instruction
+> [`sort`](https://inist-cnrs.github.io/ezs/#/plugin-analytics?id=sort), qui
+> permettra un tri inverse (avec le paramètre `reverse`) sur un champ
+> chronologique, par exemple.  
+>
+> ```ini
+> [use]
+> plugin = @ezs/analytics
+> 
+> [unpack]
+> 
+> [sort]
+> reverse = true
+> path = id
+> 
+> [dedupe]
+> path = département
+> ignore = true
+> 
+> [pack]
+> ```
+
 ## Exercices
 
 ### Quadruple
@@ -770,5 +861,8 @@ La sortie est identique à l'entrée, mais on ne s'en soucie pas.
 ezs:trace 0.0052s cumulative 0.0002s elapsed for [unpack] +0ms
 ezs:trace 4.0045s cumulative 4.0004s elapsed for [throttle] +0ms
 ```
+
+Attention! Si votre flux d'entrée a plus qu'un élément, le temps d'exécution
+sera multiplié par le nombre d'éléments.  
 
 </details>
