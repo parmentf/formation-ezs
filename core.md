@@ -435,6 +435,56 @@ ezs:info principal#4 -> {"id":4,"département":57} +0ms
 
 ## throttle
 
+On peut avoir besoin de *ralentir* le flux.  
+Par exemple pour éviter de faire trop de requêtes sur une API, en trop peu de temps.  
+
+[`throttle`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=throttle) est là pour ça.  
+D'ailleurs son seul paramètre est `bySecond`, qui précise combien d'éléments du
+flux on veut traiter *par seconde* après l'instruction.  
+
+[Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6InsgXCJpZFwiOiAxLCBcImTpcGFydGVtZW50XCI6IDU0IH1cbnsgXCJpZFwiOiAyLCBcImTpcGFydGVtZW50XCI6IDg4IH1cbnsgXCJpZFwiOiAzLCBcImTpcGFydGVtZW50XCI6IDU1IH1cbnsgXCJpZFwiOiA0LCBcImTpcGFydGVtZW50XCI6IDU3IH1cbiIsInNjcmlwdCI6Ilt1bnBhY2tdXG5cblt0aHJvdHRsZV1cbmJ5U2Vjb25kID0gMVxuXG5bYXNzaWduXVxucGF0aCA9IHRpbWVcbnZhbHVlID0gZml4KFN0cmluZyhuZXcgRGF0ZSgpKS5zbGljZSgxNiwyNCkpXG5cbltwYWNrXSJ9):
+
+*Entrée*:
+
+```jsonl
+{ "id": 1, "département": 54 }
+{ "id": 2, "département": 88 }
+{ "id": 3, "département": 55 }
+{ "id": 4, "département": 57 }
+```
+
+*Script*:
+
+```ini
+[unpack]
+
+[throttle]
+bySecond = 1
+
+[assign]
+path = time
+value = fix(String(new Date()).slice(16,24))
+
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+{"id":1,"département":54,"time":"14:24:59"}
+{"id":2,"département":88,"time":"14:25:00"}
+{"id":3,"département":55,"time":"14:25:01"}
+{"id":4,"département":57,"time":"14:25:02"}
+```
+
+Évidemment, le traitement complet sera ralenti d'autant. Pour traiter 4
+éléments, le script s'exécutera en au moins 4 secondes (ici, il ne fait pas
+grand chose, il est donc extrêmement rapide).  
+
+> [!TIP]  
+> Évidemment, si vous devez espacer deux actions de deux secondes, utilisez un
+> paramètre `bySecond` décimal, comme `0.5` (1/**2**).  
+
 ## dedupe
 
 ## Exercices
@@ -674,6 +724,51 @@ Et le résultat devrait être:
 {"id":2,"département":88,"corpus":54}
 {"id":3,"département":55,"corpus":54}
 {"id":4,"département":57,"corpus":54}
+```
+
+</details>
+
+### Attendre 4 secondes
+
+Cela n'a aucun intérêt autre que pédagogique, mais essayons de faire un script
+qui attend 4 secondes avant de rendre la main.  
+
+Il faut lui fournir un flux d'entrée, quel qu'il soit. Mais le plus court est le
+mieux, si on ne veut pas attendre plus que 4 secondes. Un élément est l'idéal.  
+
+> [!TIP]  
+> Pour vérifier le temps mis par le script, utilisez les logs, dans la partie
+> basse de la fenêtre.  
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+*Entrée* (mais l'élément peut être différent, ça n'a aucune importance):
+
+```jsonl
+{ "id": 1, "département": 54 }
+```
+
+*Script*:
+
+```ini
+[unpack]
+
+[throttle]
+bySecond = 0.25
+
+[pack]
+```
+
+La sortie est identique à l'entrée, mais on ne s'en soucie pas.
+
+*Log*:
+
+```log
+ezs:trace 0.0052s cumulative 0.0002s elapsed for [unpack] +0ms
+ezs:trace 4.0045s cumulative 4.0004s elapsed for [throttle] +0ms
 ```
 
 </details>
