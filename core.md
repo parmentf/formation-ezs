@@ -388,8 +388,50 @@ Parfois, on a besoin d'appliquer un bout de script seulement sur le premier des
 là pour ça: cette instruction crée un sous-flux qui ne sera appliqué que sur le
 premier élément du flux.  
 
-Par exemple, 
+Par exemple, on peut vouloir calculer une valeur à partir du premier élément du
+flux, et l'utiliser dans tous les éléments du flux.  
 
+Exemple:
+
+*Entrée*:
+
+```jsonl
+{ "id": 1, "département": 54 }
+{ "id": 2, "département": 88 }
+{ "id": 3, "département": 55 }
+{ "id": 4, "département": 57 }
+```
+
+*Script*:
+
+```ini
+[unpack]
+
+[singleton]
+
+[singleton/debug]
+text = singleton
+
+[debug]
+text = principal
+
+[pack]
+```
+
+*Log* (uniquement `ezs:info`):
+
+```log
+ezs:info singleton#1 -> {"id":1,"département":54} +0ms
+ezs:info principal#1 -> {"id":1,"département":54} +0ms
+ezs:info principal#2 -> {"id":2,"département":88} +0ms
+ezs:info principal#3 -> {"id":3,"département":55} +0ms
+ezs:info principal#4 -> {"id":4,"département":57} +0ms
+```
+
+> [!WARNING]  
+> Même si on ne met pas de paramètre à l'instruction `[singleton]`, il faut la
+> déclarer sur une ligne séparée avant d'écrire le sous-flux, sinon il ne
+> se déclenchera pas.  
 
 ## throttle
 
@@ -524,6 +566,114 @@ path = value
 value = get("value").thru(dept => env("noms")[dept])
 
 [pack]
+```
+
+</details>
+
+### Identifiant de corpus
+
+Faire un script qui donne un nom de corpus à tous les éléments du flux, à partir
+du *timestamp* de passage du premier élément du flux.
+
+Ce script ne convient pas&nbsp;:
+
+```ini
+[unpack]
+
+[assign]
+path = corpus
+value = fix(Date.now())
+
+[pack]
+```
+
+Avec un script utilisant `Date.now()` pour récupérer le *timestamp* à chaque
+élément, comme le *timestamp* est précis à la milliseconde, on risque d'avoir
+des éléments d'un même flux avec un identifiant de flux différent. C'est
+d'autant plus probable que le nombre d'éléments du flux est grand (et long à
+traiter).  
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+L'instruction `[env]` est adaptée&nbsp;: elle calcule une valeur une seule fois
+pour tout le flux.  
+
+```ini
+[env]
+path = corpus
+value = fix(Date.now())
+
+[unpack]
+
+[assign]
+path = corpus
+value = env("corpus")
+
+[pack]
+```
+
+> [!NOTE]  
+> Si on voulait être plus royaliste que le roi, on pourrait faire remarquer que
+> `[env]` est exécutée *avant* que le premier élément du flux soit traité.  
+> C'est l'objet de l'exercice suivant.  
+
+</details>
+
+### Identifiant de corpus (2)
+
+Faire un script qui donne un nom de corpus à tous les éléments du flux, à partir
+de la valeur du champ `département` du premier élément du flux.
+
+Exemple d'entrée:
+
+```jsonl
+{ "id": 1, "département": 54 }
+{ "id": 2, "département": 88 }
+{ "id": 3, "département": 55 }
+{ "id": 4, "département": 57 }
+```
+
+> [!IMPORTANT]  
+> Cette fois, l'utilisation de `[env]` ne sera pas suffisante, puisqu'elle est
+> exécutée *au début* du flux (avant le premier élément).  
+> Il va donc falloir se tourner vers l'instruction [`[singleton]`](#singleton).  
+
+> [!IMPORTANT]  
+> L'utilisation de `[singleton]` n'est pas suffisante, il faut l'utiliser pour
+> récupérer (`get()`) la valeur du champ `département` du premier élément en
+> combinaison avec `[env]` pour affecter une variable d'environnement qu'on
+> pourra récupérer dans le flux normal.  
+
+<details>
+<summary>
+Voir la solution
+</summary>
+
+```ini
+[unpack]
+
+[singleton]
+[singleton/env]
+path = corpus
+value = get("département")
+
+[assign]
+path = corpus
+value = env("corpus")
+
+[pack]
+```
+
+Et le résultat devrait être:
+
+```jsonl
+{"id":1,"département":54,"corpus":54}
+{"id":2,"département":88,"corpus":54}
+{"id":3,"département":55,"corpus":54}
+{"id":4,"département":57,"corpus":54}
 ```
 
 </details>
