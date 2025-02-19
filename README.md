@@ -28,7 +28,8 @@ interne à l'Inist-CNRS.
    4. [singleton](core.md#singleton)
    5. [throttle](core.md#throttle)
    6. [dedupe](core.md#dedupe)
-4. Usages avancés
+   7. [Exercices: quadruple, départements, id, attendre, ...](core.md#exercices)
+4. [Usages avancés](advanced.md)
    1. plugins (analytics, teeft, istex, conditor, sparql, spawn)
    2. `.cfg` (delegate ; ex: loterre-resolvers)
    3. loaders
