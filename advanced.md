@@ -1,16 +1,16 @@
 # Usages avancés
 
-Nous n'avons fait que survoler les instructions des deux *plugins* les plus
-utilisés: `@ezs/core` et `@ezs/basics`.  
 N'hésitez pas à explorer [la documentation
 d'ezs](https://inist-cnrs.github.io/ezs/#/?id=ezs-illustration), et les
-instructions disponibles dans ces deux *plugins*.  
+instructions disponibles dans ces deux *plugins*, car nous n'avons fait que
+survoler les instructions des deux *plugins* les plus utilisés: `@ezs/core` et
+`@ezs/basics`.  
 
 > [!NOTE]  
 > Nous sommes preneurs de toute amélioration de cette documentation.  
 > Nous savons qu'elle est largement perfectible.  
 
-## plugins (analytics, teeft, istex, conditor, sparql, spawn)
+## plugins
 
 Mais il y a bien d'autres instructions disponibles dans les *plugins* déjà
 publiés, même s'ils sont plus spécialisés.  
