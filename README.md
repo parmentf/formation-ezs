@@ -30,7 +30,7 @@ interne à l'Inist-CNRS.
    6. [dedupe](core.md#dedupe)
    7. [Exercices: quadruple, départements, id, attendre, ...](core.md#exercices)
 4. [Usages avancés](advanced.md)
-   1. plugins (analytics, teeft, istex, conditor, sparql, spawn)
+   1. [plugins (analytics, teeft, istex, conditor, sparql, spawn, ...)](advanced.md)
    2. `.cfg` (delegate ; ex: loterre-resolvers)
    3. loaders
    4. le cas Lodash
