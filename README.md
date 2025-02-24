@@ -32,7 +32,7 @@ interne à l'Inist-CNRS.
 4. [Usages avancés](advanced.md)
    1. [plugins (analytics, teeft, istex, conditor, sparql, spawn, ...)](advanced.md#plugins)
    2. [scripts complexes](advanced.md#scripts-complexes)
-   3. loaders
+   3. [loaders](advanced.md#loaders)
    4. le cas Lodash
 5. Ressources
    1. playground

@@ -191,4 +191,310 @@ file = recipient.cfg
 
 ## loaders
 
+Un [*loader* de
+Lodex](https://www.lodex.fr/docs/documentation/principales-fonctionnalites-disponibles/les-loaders/)
+est un script ezs destiné à convertir un fichier de données d'un format donné en
+un flux d'objets JavaScript à charger dans la base de données Mongo de Lodex.  
+
+On peut fournir soi-même un *loader*, dans le cas où aucun des [*loaders*
+fournis](https://github.com/Inist-CNRS/lodex/tree/master/workers/loaders) ne
+nous satisfait.  
+Le plus simple est tout de même de partir d'un script existant.  
+
+### [`json-lines.ini`](https://github.com/Inist-CNRS/lodex/blob/89bbfef8a07e2417dda88d71d3b2ef5316c87290/workers/loaders/json-lines.ini)
+
+```ini
+append = pack
+label = json-lines
+
+# load some plugins to activate some statements
+[use]
+plugin = basics
+
+[unpack]
+
+# Ensures that each object contains an identification key (required by lodex)
+[swing]
+test = pick(['URI', 'uri']).pickBy(_.identity).isEmpty()
+[swing/identify]
+
+# Ignore objects with duplicate URI
+[dedupe]
+ignore = true
+
+# Prevent keys form containing dot path notation (which is forbidden by nodejs mongoDB driver)
+[OBJFlatten]
+separator = fix('.')
+reverse = true
+
+# Uncomment to see each data sent to the database
+#[debug]
+
+# Add contextual metadata related to the import
+[assign]
+path = lodexStamp.importedDate
+value = fix(new Date()).thru(d => d.toDateString())
+path = lodexStamp.usedParser
+value = env('parser')
+path = lodexStamp.uploadedFilename
+value = env('source')
+path = uri
+value = get('uri').trim()
+```
+
+> [!TIP]  
+> La première ligne (`append = pack`) est là pour aider au développement du *loader*.  
+> En effet, ce script est lancé dans l'environnement de lodex, il est destiné à
+> renvoyer des objets JavaScript directement.  
+> Donc contrairement à ce que nous avons fait dans le *playground*, il n'y a pas
+> besoin d'une instruction finale qui transforme les objets javascript en chaîne
+> de caractères.  
+> Mais quand on développe le *loader*, on est en dehors de lodex, et on veut
+> pouvoir voir le résultat du script (autrement que par `[object Object]`).  
+> C'est pourquoi ezs accepte une syntaxe permettant d'exécuter dans lodex (ou
+> dans un programme JavaScript) un script qui fournit des objets, et qui, sans
+> modification, fournit une chaîne de caractères quand on le lance via la ligne
+> de commande.  
+>
+> Le script se comporte alors comme si sa dernière instruction (*append* =
+> ajouter à la fin) était `pack`.  
+
+> [!WARNING]  
+> La syntaxe `append = pack` ne fonctionne pas dans le *playground* (c'est une
+> métadonnée ignorée par ezs).  
+> Aussi, si vous utilisez le *playground* pour développer un *loader*, n'oubliez
+> pas supprimer ou de commenter la ligne `[pack]` avant de l'utiliser dans
+> lodex.  
+
+> [!NOTE]  
+> La ligne `label = json-lines` permet de lier *loader* au label à afficher dans
+> la liste des *loaders*, en utilisant le [fichier de
+> traductions](https://github.com/Inist-CNRS/lodex/blob/89bbfef8a07e2417dda88d71d3b2ef5316c87290/src/app/custom/translations.tsv#L482).  
+
+> [!NOTE]  
+> La dernière instruction ajoute une colonne `lodexStamp` à chaque élément du
+> flux, afin d'avoir une trace&nbsp;:  
+>
+> - de la date d'importation `importedDate`
+> - du nom du *loader* utilisé `parser`
+> - du nom du fichier importé `uploadedFilename`
+> - de l'identifiant du document `uri`
+
+> [!IMPORTANT]  
+> Il y a une contrainte imposée par lodex: la colonne `uri` doit exister (et
+> contenir un identifiant).  
+>
+> C'est l'objet de cette partie du *loader*:
+>
+> ```ini
+> # Ensures that each object contains an identification key (required by lodex)
+> [swing]
+> test = pick(['URI', 'uri']).pickBy(_.identity).isEmpty()
+> [swing/identify]
+> ```
+>
+> L'instruction
+> [`[swing]`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=swing) applique
+> un sous-script (ici uniquement composé de l'instruction `[identify]`) aux
+> éléments du flux, quand l'élément vérifie le test (ici, le sous-flux est
+> déclenché quand l'élément courant ne possède pas de champ `uri` ou `URI`).  
+> L'instruction
+> [`[identify]`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=identify) se
+> contente d'ajouter un champ `uri` avec un identifiant unique.  
+
+<!-- ### [`json-optimzed.ini`](https://github.com/Inist-CNRS/lodex/blob/89bbfef8a07e2417dda88d71d3b2ef5316c87290/workers/loaders/json-optimized.ini)
+
+Le *loader* `json-optimized` a une structure très similaire à celle de
+`json-lines`, mais utilise une instruction supplémentaire&nbsp;:
+[`[OBJStandardize]`](https://inist-cnrs.github.io/ezs/#/plugin-basics?id=objstandardize).
+
+Cette instruction s'assure que toutes les colonnes du *dataset* auront une
+valeur (une chaîne vide par défaut). -->
+
+### plugin lodex
+
+[`json-report.ini`](https://github.com/Inist-CNRS/lodex/blob/fc6fa35dbce83a3178df0989835266f9adee81c1/workers/loaders/json-report.ini)
+utilise un *plugin* qui n'est pas listé dans la documentation d'ezs: `lodex`.  
+
+Comme ce *plugin* contient des instructions propres à lodex (et qui ne sont
+utiles que dans ce contexte), il a été décidé de localiser le code source de ce
+*plugin* dans [le dépôt de
+lodex](https://github.com/Inist-CNRS/lodex/tree/fc6fa35dbce83a3178df0989835266f9adee81c1/packages/ezsLodex).  
+
+On y trouve des instructions traitant de formats du web sémantique
+(NQuads,JsonLd, Turtle), et d'autres instructions utilisées principalement dans
+les routines (on y trouve des scripts combinant au moins le *plugin* `lodex` et
+le *plugin* `analytics`).  
+
+Dans le cas de `json-report`, on utilise l'instruction `objects2columns` qui
+aplatit les éléments du flux pour en faire des éléments tabulaires (c'est-à-dire
+à un seul niveau).  
+
+Par exemple, un élément de départ
+
+```json
+[{
+  "racine": {
+    "branche": "feuille"
+  },
+  "logiciel": "lodex",
+  "version": 15
+}]
+```
+
+sera transformé en un objet plus simple:
+
+```json
+[{
+  "racine": "{\"branche\":\"feuille\"}",
+  "logiciel": "lodex",
+  "version": 15
+}]
+```
+
+> [!TIP]  
+> Pour convertir une structure complexe à plusieurs niveaux en une série de
+> colonnes, on utilise plutôt
+> [`[OBJFlatten]`](https://inist-cnrs.github.io/ezs/#/plugin-basics?id=objflatten)
+> qui transforme le chemin jusqu'à la feuille en nom de colonne.  
+>
+> Avec le même exemple que tout-à-l'heure, on obtiendra (avec les paramètres par
+> défaut)&nbsp;:  
+>
+> ```json
+> [{
+>     "racine/branche": "feuille",
+>     "logiciel": "lodex",
+>     "version": 15
+> }]
+> ```
+
+> [!NOTE]  
+> On voit dans `json-report.ini` une utilisation de `[OBJECTFlatten]` qui était
+> déjà apparue dans d'autres *loaders*&nbsp;:  
+>
+> ```ini
+> # Prevent keys from containing dot path notation (which is forbidden by nodejs mongoDB driver)
+> [OBJFlatten]
+> separator = fix('.')
+> reverse = true
+> safe = true
+> ```
+>
+> À cause du paramètre `reverse = true`, cette instruction fait l'inverse&nbsp;:
+> elle recrée une structure arborescente quand elle rencontre un nom de champ
+> avec une notation pointée.  
+>
+> [Exemple](http://ezs-playground.daf.intra.inist.fr/?x=eyJpbnB1dCI6Ilt7XG4gIFwicmFjaW5lLmJyYW5jaGVcIjogXCJmZXVpbGxlXCIsXG4gIFwibG9naWNpZWxcIjogXCJsb2RleFwiLFxuICBcInZlcnNpb25cIjogMTVcbn1dXG4iLCJzY3JpcHQiOiJbSlNPTlBhcnNlXVxuXG5bT0JKRmxhdHRlbl1cbnNlcGFyYXRvciA9IGZpeChcIi5cIilcbnJldmVyc2UgPSB0cnVlXG5zYWZlID0gdHJ1ZVxuXG5bZHVtcF1cbmluZGVudCA9IHRydWUifQ==)&nbsp;:
+>
+> *Entrée*:
+>
+> ```json
+> [{
+>   "racine.branche": "feuille",
+>   "logiciel": "lodex",
+>   "version": 15
+> }]
+> ```
+>
+> *Script*:
+>
+> ```ini
+> [JSONParse]
+> 
+> [OBJFlatten]
+> separator = fix(".")
+> reverse = true
+> safe = true
+> 
+> [dump]
+> indent = true
+> ```
+>
+> *Sortie*:
+>
+> ```json
+> [{
+>     "racine": {
+>         "branche": "feuille"
+>     },
+>     "logiciel": "lodex",
+>     "version": 15
+> }]
+> ```
+>
+> L'intérêt de cette instruction est de s'assurer qu'aucun nom de colonne ne
+> contient de `.`, car c'est incompatible avec l'utilisation de MongoDB (la base
+> de données de lodex).  
+>
+> Dans le cas présent, la colonne `racine` contiendrait un objet javascript (ce
+> qui est tout-à-fait utilisable).  
+
+### *loader* spécialisé
+
+Le *loader*
+[`query-conditor-for-halcnrs.ini`](https://github.com/Inist-CNRS/lodex/blob/fc6fa35dbce83a3178df0989835266f9adee81c1/workers/loaders/query-conditor-for-halcnrs.ini)
+est spécialisé dans l'interrogation d'une base bibliographique (conditor), et ne
+garde que les notices venant de HAL.  
+
+La première partie convertit le fichier importé en requête sur l'API
+[CorHAL](https://corhal-api.inist.fr/api-docs/), et s'assure que chaque notice
+retournée aura un champ `uri` unique&nbsp;:  
+
+```ini
+[TXTConcat]
+
+[replace]
+path = q
+value = self().trim()
+
+[CORHALFetch]
+url = https://corhal-api.inist.fr
+retries = 3
+timeout = 60000
+
+[assign]
+path = uri
+value = get('business.sourceUidChain')
+```
+
+Ensuite vient la sélection et la transformation des champs (partie la plus
+longue du script).  
+
+Notez que la dernière instruction est `[exchange]` qui, combinée à la fonction
+lodash `omit()`, permet de se débarrasser des champs non souhaités ou inutiles.  
+
+[`[exchange]`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=exchange)
+permet de remplacer tout un élément par un autre (il ne faut pas se laisser abuser
+par le paramètre `value` qui pourrait laisser croire qu'on ne remplace qu'un
+champ `value`: c'est toute la valeur de l'élément qui est remplacée).  
+
+<!-- Les plus simples:
+
+- csv.ini
+- json-lines.ini
+
+intéressants:
+
+- json-optimized.ini (OBJStandardize)
+- append = (exécuté en dehors de lodex)
+- assign des métadonnées (env("parser"), env("source"))
+- json-report.ini (plugin lodex,
+  [objects2columns](https://github.com/Inist-CNRS/lodex/tree/master/packages/ezsLodex#objects2columns))
+- query-conditor.ini
+- query-istex.ini
+- tei-persee.ini (sélection de champs / tei.ini)
+- test-country.ini (expand / loterre) ==> exercice: utiliser le vrai service loterre
+
+complexes:
+
+- json-protege.ini
+- query-conditor-for-halcnrs.ini
+- query-openalex.ini
+- skos.ini (overturn/swing) -->
+
 ## le cas Lodash
+
+<!-- 
+Voir `query-conditor-for-halcnrs.ini` 
+-->
