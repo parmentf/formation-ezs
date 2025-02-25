@@ -461,13 +461,27 @@ value = get('business.sourceUidChain')
 Ensuite vient la sélection et la transformation des champs (partie la plus
 longue du script).  
 
-Notez que la dernière instruction est `[exchange]` qui, combinée à la fonction
-lodash `omit()`, permet de se débarrasser des champs non souhaités ou inutiles.  
+Notez que la [dernière
+instruction](https://github.com/Inist-CNRS/lodex/blob/fc6fa35dbce83a3178df0989835266f9adee81c1/workers/loaders/query-conditor-for-halcnrs.ini#L145-L146)
+est `[exchange]` qui, combinée à la fonction lodash `omit()`, permet de se
+débarrasser des champs non souhaités ou inutiles.  
+
+```ini
+[exchange]
+value = omit(["abstract","authors","classifications","business","pii","arxiv","inspire","localRef","pmcId","articleNumber","nnt","ppn","origins","technical","halId","title","originalGenre","pmId","fulltextUrl","enrichments","host"])
+```
 
 [`[exchange]`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=exchange)
 permet de remplacer tout un élément par un autre (il ne faut pas se laisser abuser
 par le paramètre `value` qui pourrait laisser croire qu'on ne remplace qu'un
 champ `value`: c'est toute la valeur de l'élément qui est remplacée).  
+
+> [!TIP]  
+> Quand les champs à garder sont peu nombreux et connus à l'avance, on a
+> avantage à utiliser l'instruction
+> [`[keep]`](https://inist-cnrs.github.io/ezs/#/plugin-core?id=keep), qui ne
+> conserve de l'élément que les champs précisés dans ses paramètres `path`
+> (répétable).  
 
 <!-- Les plus simples:
 
@@ -498,3 +512,89 @@ complexes:
 <!-- 
 Voir `query-conditor-for-halcnrs.ini` 
 -->
+
+Pour être le plus efficace possible dans les scripts ezs, l'idéal est de
+connaître [Lodash](https://lodash.com/) (qui est une bibliothèque JavaScript
+exposée dans ezs, à chaque fois qu'on veut affecter une valeur à un paramètre).  
+
+Évidemment, savoir programmer en JavaScript (donc en connaître les instructions
+et les types) est un plus.  
+Cela vous permet de mieux comprendre ce qui se passe, et comment traiter
+certains cas délicats.  
+
+> [!IMPORTANT]  
+> La documentation de Lodash suppose qu'on l'utilise directement en JavaScript,
+> pas dans le contexte de lodex, où on l'utilise en [mode
+> chaîné](https://lodash.com/docs/4.17.15#chain).  
+>
+> Mais comme tous les paramètres des instructions ezs sont en mode chaîné, cela
+> implique trois choses&nbsp;:  
+>
+> 1. pas besoin de passer l'élément dans une fonction `chain()`
+> 2. les fonctions Lodash ont toutes un premier paramètre qui représente
+>    l'élément sur lequel elle va s'appliquer.  Ce n'est pas le cas en mode
+>    chaîné.  En particulier, la première fonction utilisée n'aura pas besoin de
+>    préciser la donnée utilisée (c'est l'élément courant).  Par exemple, si on
+>    utilise `get("champ")`, cela implique qu'on récupère le champ `champ` de
+>    l'élément courant, pas besoin de préciser `_.get(element, "champ")` comme
+>    on le ferait en JavaScript pur.  
+> 3. pas besoin d'appeler `value()` à la fin de la chaîne, lodex le fait
+>    automatiquement.  
+
+Il faut prendre conscience que tant qu'on est dans un chaînage de fonctions
+lodash, on reste dans lodash, mais que parfois les fonctions lodash prennent en
+paramètre des fonctions JavaScript (dont le résultat n'est pas chaînable avec
+des fonctions lodash).  
+
+Exemple:
+
+*Entrée*:
+
+```jsonl
+{ "id":1, "val": [1,2,3]}
+{ "id":2, "val": [3,4,5]}
+```
+
+*Script*:
+
+```ini
+[unpack]
+
+[assign]
+path = somme
+value = get("val").reduce((somme, valeur) => somme + valeur, 0)
+
+[pack]
+```
+
+*Sortie*:
+
+```jsonl
+{"id":1,"val":[1,2,3],"somme":6}
+{"id":2,"val":[3,4,5],"somme":12}
+```
+
+Ici, [`reduce`](https://lodash.com/docs/4.17.15#reduce) est une fonction lodash.  
+Il existe aussi une méthode JavaScript appelée `reduce`, qui s'appelle de la même manière sur un tableau.  
+Mais elle n'est pas chaînable au sens lodash avec d'autres fonctions lodash.  
+
+### fonctions chaînées d'ezs
+
+ezs fournit aussi des fonctions chaînées, qui ressemblent à des fonctions lodash&nbsp;:
+
+- [`append()`](https://inist-cnrs.github.io/ezs/#/coding-ini?id=pour-pr%c3%a9fixer-ou-suffixer-une-valeur-prepend-append):
+  ajoute un suffixe à une chaîne de caractères
+- `prepend()`: ajoute un préfixe à une chaîne de caractères
+- [`env()`](https://inist-cnrs.github.io/ezs/#/coding-ini?id=pour-acc%c3%a9der-%c3%a0-des-variables-d39environnement-env):
+  accès aux variables d'environnement
+- [`fix()`](https://inist-cnrs.github.io/ezs/#/coding-ini?id=pour-d%c3%a9finir-une-valeur-fix):
+  crée une valeur fixe
+- [`self()`](https://inist-cnrs.github.io/ezs/#/coding-ini?id=pour-acc%c3%a9der-%c3%a0-l39objet-courant-self):
+  renvoie la valeur de l'élément courant
+
+Voir aussi le parcours complémentaire [Lodex : curation des données avec
+Lodash](https://360.articulate.com/review/content/8a03727a-da2c-4eed-a5f1-0f8e85cf7440/review)
+
+> [!NOTE]  
+> La fonction `compute()` abordée dans le parcours complémentaire a été
+> supprimée depuis la version 3.11.0 de `@ezs/core`.  
