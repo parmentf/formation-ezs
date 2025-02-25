@@ -33,9 +33,10 @@ interne à l'Inist-CNRS.
    1. [plugins (analytics, teeft, istex, conditor, sparql, spawn, ...)](advanced.md#plugins)
    2. [scripts complexes](advanced.md#scripts-complexes)
    3. [loaders](advanced.md#loaders)
-   4. le cas Lodash
-5. Ressources
-   1. playground
-   2. npm
-   3. documentation
-   4. github (ezs, lodex/ezsLodex)
+   4. [le cas Lodash](advanced.md#le-cas-lodash)
+5. [Ressources](resources.md)
+   1. [playground](resources.md#playground)
+   2. [npm](resources.md#npm)
+   3. [documentation](resources.md#documentation)
+   4. [parcours complémentaire Lodash](resources.md#parcours-complémentaire-lodash)
+   5. [github (ezs, lodex/ezsLodex)](resources.md#github-ezs-lodexezslodex)
