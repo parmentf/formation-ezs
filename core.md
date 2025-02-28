@@ -578,6 +578,14 @@ Le résultat sera:
 > [pack]
 > ```
 
+> [!WARNING]  
+> Cette instruction n'est malheureusement pas écrite pour gérer des millions
+> d'éléments.  
+> Pour savoir si un champ est déjà apparu dans le début du flux, elle stocke les
+> valeurs dans un tableau.  
+> Le risque est de manquer de mémoire, et donc de faire planter le script au
+> milieu du traitement.  
+
 ## Exercices
 
 ### Quadruple
