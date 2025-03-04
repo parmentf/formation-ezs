@@ -436,6 +436,23 @@ url = https://terms-extraction.services.istex.fr/v1/teeft/fr
 
 ## Exercices: json2jsonl, jsonl2tsv, et caetera
 
+Au lieu de chacun jouer les exercices dans son coin, afin d'éviter l'attente des
+réponses aux éventuelles questions, et pour faire profiter tout le monde de ces
+remarques, nous allons pratiquer un [*Coding
+Dojo*](https://codingdojo.org/fr/practices/WhatIsCodingDojo/) (avec une [*Time
+Box*](https://codingdojo.org/practices/TimeBox/)):
+
+1. deux personnes commencent (un pilote et un co-pilote),
+2. le pilote est au clavier, le co-pilote l'aide (ils peuvent décider de
+   demander l'aide de l'assistance),
+3. après 5 (ou 7 minutes):
+
+   - le pilote retourne dans l'assistance,
+   - le co-pilote devient le pilote,
+   - une personne de l'assistance devient le co-pilote.
+
+4. on recommence à l'étape 2
+
 ### json2jsonl
 
 Avec les instructions `JSONParse` et `pack`, nous sommes outillés pour créer un
