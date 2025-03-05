@@ -127,7 +127,7 @@ indent = true
 > [unpack]
 > 
 > [assign]
-> path = un
+> path = double
 > value = get("id").multiply(2)
 > 
 > [dump]
@@ -201,8 +201,8 @@ Le script aurait été:
 [unpack]
 
 [assign]
-path = value
-value = get("value").multiply(2)
+path = valeur
+value = get("valeur").multiply(2)
 
 [pack]
 ```
