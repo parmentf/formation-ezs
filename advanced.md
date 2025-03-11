@@ -88,8 +88,6 @@ en deux scripts `long.ini` et `replace-dept.ini`:
 [expand]
 size = 2
 path = département
-
-[expand/assign]
 file = replace-dept.ini
 
 # Ici, on suppose que d'autres traitements ont lieu
@@ -435,7 +433,7 @@ sera transformé en un objet plus simple:
 Le *loader*
 [`query-conditor-for-halcnrs.ini`](https://github.com/Inist-CNRS/lodex/blob/fc6fa35dbce83a3178df0989835266f9adee81c1/workers/loaders/query-conditor-for-halcnrs.ini)
 est spécialisé dans l'interrogation d'une base bibliographique (conditor), et ne
-garde que les notices venant de HAL.  
+garde que les notices contenant au moins deux fois HAL.  
 
 La première partie convertit le fichier importé en requête sur l'API
 [CorHAL](https://corhal-api.inist.fr/api-docs/), et s'assure que chaque notice
